@@ -21,16 +21,34 @@ st.title("💰 My Budget Dashboard")
 
 @st.cache_data
 def load_csvs(pattern):
-    """Carrega todos os CSVs que batem com o padrão e concatena num único DataFrame."""
+    """Carrega todos os CSVs que batem com o padrão e concatena num único DataFrame,
+       ignorando arquivos vazios ou sem colunas."""
     files = glob.glob(os.path.join(DATA_DIR, pattern))
     dfs = []
     for f in files:
-        df = pd.read_csv(f, parse_dates=["data"], dayfirst=True)
+        # pula arquivos de tamanho zero
+        if os.path.getsize(f) == 0:
+            st.warning(f"Arquivo vazio: {os.path.basename(f)} — pulando.")
+            continue
+
+        try:
+            df = pd.read_csv(f, parse_dates=["data"], dayfirst=True)
+        except pd.errors.EmptyDataError:
+            st.warning(f"Sem colunas em: {os.path.basename(f)} — pulando.")
+            continue
+
+        # se acabou sem colunas, pula
+        if df.empty:
+            st.warning(f"Dados nulos em: {os.path.basename(f)} — pulando.")
+            continue
+
         df["origem"] = os.path.basename(f).replace(".csv", "")
         dfs.append(df)
+
     if dfs:
         return pd.concat(dfs, ignore_index=True)
     else:
+        return pd.DataFrame()
         return pd.DataFrame()
 
 # 1) Extratos bancários e cartões
