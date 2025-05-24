@@ -37,7 +37,7 @@ def load_csvs(pattern):
             st.warning(f"Sem colunas em: {os.path.basename(f)} — pulando.")
             continue
 
-        # se acabou sem colunas, pula
+        # se acabou sem linhas válidas, pula
         if df.empty:
             st.warning(f"Dados nulos em: {os.path.basename(f)} — pulando.")
             continue
@@ -48,7 +48,6 @@ def load_csvs(pattern):
     if dfs:
         return pd.concat(dfs, ignore_index=True)
     else:
-        return pd.DataFrame()
         return pd.DataFrame()
 
 # 1) Extratos bancários e cartões
