@@ -1,0 +1,6 @@
+streamlit
+pandas
+plotly
+openai
+tabula-py
+camelot-py[cv]
